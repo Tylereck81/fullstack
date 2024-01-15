@@ -69,6 +69,7 @@ const App = () => {
   const [showAll, setShowAll] = useState(true) 
   const [newFilter, setNewFilter] = useState('') 
 
+  
   //event handlers
   const handleNewName =(event) =>{ 
     setNewName(event.target.value)
@@ -107,13 +108,19 @@ const App = () => {
       //created new person object
       const person_object = { 
         name: newName,
-        number: newNumber, 
-        id: persons.length+1
+        number: newNumber
       }
 
-      setPersons(persons.concat(person_object))
-      setNewName('')
-      setNewNumber('')
+      axios
+        .post('http://localhost:3001/persons', person_object)
+        .then(response =>{ 
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNewNumber('')
+
+        })
+
+      
     }
   }
 
