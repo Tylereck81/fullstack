@@ -78,7 +78,7 @@ const App = () => {
 
   const deleteContactOf = (key) =>{ 
     const p = persons.find(p=> p.id === key)
-    if(window.confirm("Delete "+ p.name)){
+    if(window.confirm("Delete "+ p.name+"?")){
       personService
         .del(key)
         .then(response =>{ 
