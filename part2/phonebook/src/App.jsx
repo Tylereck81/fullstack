@@ -76,7 +76,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true) 
   const [newFilter, setNewFilter] = useState('') 
-  const [message, setMessage] = useState('some notification')
+  const [message, setMessage] = useState('')
   const [type, setType] = useState('')
 
   //gets inital list of contacts in phonebook
@@ -144,6 +144,15 @@ const App = () => {
           setPersons(persons.map(p => p.id !== person.id ? p: newPerson ))
           setNewName('')
           setNewNumber('')
+        })
+        .catch(error =>{
+          setType('error') 
+          setMessage(`Information of ${name} has already been removed from the server`)
+          setTimeout(() =>{ 
+            setMessage(null) 
+            setType(null)
+          },5000)
+          
         })
 
       }
