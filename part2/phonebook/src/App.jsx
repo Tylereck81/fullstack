@@ -3,6 +3,17 @@ import axios from 'axios'
 import personService from './services/persons'
 import persons from './services/persons'
 
+const Notification = ({type, message}) =>{ 
+  if(message === null){ 
+    return null
+  }
+  return (
+    <div className={type}>
+      {message} 
+    </div>
+  )
+}
+
 const Title = (props) =>{
   return(
     <h2>{props.text}</h2>
@@ -65,6 +76,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true) 
   const [newFilter, setNewFilter] = useState('') 
+  const [message, setMessage] = useState('some notification')
+  const [type, setType] = useState('')
 
   //gets inital list of contacts in phonebook
   useEffect( () =>{
@@ -148,7 +161,16 @@ const App = () => {
           setPersons(persons.concat(newPerson))
           setNewName('')
           setNewNumber('')
+
+          setType('notif')
+          setMessage(`Added ${person_object.name}`)
+
+          setTimeout(()=>{
+            setMessage(null)
+            setType(null)
+          },5000)
         })
+      
 
     }
   }
@@ -156,6 +178,7 @@ const App = () => {
   return (
     <div>
       <Title text="Phonebook" />
+      <Notification type={type} message={message} />
       <Filter val = {newFilter} onChange = {handleNewFilter} />
       
       <Title text="add new" />
