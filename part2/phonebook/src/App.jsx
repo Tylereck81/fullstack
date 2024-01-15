@@ -115,11 +115,25 @@ const App = () => {
   const addContact = (event) =>{ 
     event.preventDefault() 
     const name = newName
+    const person = persons.find(n => n.name === name)
     
     //checks if person has already been added to contacts
-    if (persons.find(n => n.name === name)){
-      let a = `${name} is already added to phonebook`
-      alert(a)
+    if (person){
+      let a = `${person.name} is already added to phonebook, replace the old number with a new one?`
+
+      //confirm user wants to replace the number
+      if(window.confirm(a)){ 
+        const person_object = { ...person, number: newNumber}
+
+        personService
+        .update(person.id, person_object) 
+        .then(newPerson =>{ 
+          setPersons(persons.map(p => p.id !== person.id ? p: newPerson ))
+          setNewName('')
+          setNewNumber('')
+        })
+
+      }
     }
     else{
       //created new person object
