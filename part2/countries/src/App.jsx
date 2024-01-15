@@ -1,5 +1,6 @@
 import { useState,useEffect } from 'react'
 import axios from 'axios'
+const api_key = import.meta.env.VITE_SOME_KEY
 
 const List_Country =({countries, showCountryDetails}) =>{
   if (countries.length == 1){ 
@@ -26,6 +27,37 @@ const List_Country =({countries, showCountryDetails}) =>{
   
 }
 
+const WeatherInfo = ({country}) =>{ 
+  let lat =country[0].capitalInfo.latlng[0]
+  let long =country[0].capitalInfo.latlng[1]
+
+  const [temp, setTemp] = useState('')
+  const [icon, setIcon] = useState('')
+  const [windspeed, setWind] = useState('')
+  // console.log(lat,long)
+  // console.log(api_key)
+
+  //gets the data
+  useEffect(() =>{ 
+    axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${long}&appid=${api_key}`)
+    .then(response => { 
+      setTemp(response.current.temp -273.15)
+      setIcon(`https://openweathermap.org/img/wn/ ${response.current.weather[0].icon}.png`)
+      setWind(response.current.wind_speed)
+    })
+  }, [])
+
+  console.log(temp)
+  return(
+    <div>
+        <b>Weather in {country[0].capital}</b>
+        <p>temperature {temp} Celcius</p>
+        <p>wind {windspeed} m/s</p>
+        <img src ={icon} />
+    </div>
+  )
+}
+
 const CountryInfo =({countries}) =>{ 
   console.log(countries.length)
   if(countries.length == 1){
@@ -44,6 +76,7 @@ const CountryInfo =({countries}) =>{
               )}
             </ul>
             <img src ={c.flags.png} />
+            <WeatherInfo country = {countries} />
           </div>
         )}
         
