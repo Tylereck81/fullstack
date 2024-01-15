@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react'
 import axios from 'axios'
 
-const List_Country =({countries}) =>{
+const List_Country =({countries, showCountryDetails}) =>{
   if (countries.length == 1){ 
     return(
       <div>
@@ -15,7 +15,10 @@ const List_Country =({countries}) =>{
     return(
       <div>
         {countries.map(c => 
-        <div key={c.name.common}>{c.name.common}</div>
+        <div 
+        key={c.name.common}>{c.name.common} 
+        <button onClick={() => showCountryDetails(c.name.common)}>show</button>
+        </div>
         )}
       </div>
     )
@@ -37,7 +40,7 @@ const CountryInfo =({countries}) =>{
             <b>languages: </b>
             <ul> 
               {languages.map(lang => 
-                <li>{lang}</li>
+                <li key ={lang}>{lang}</li>
               )}
             </ul>
             <img src ={c.flags.png} />
@@ -63,6 +66,11 @@ const App = () => {
         setAllCountries(response.data)
       })
   }, [])
+
+  const showCountryDetails = (key) =>{ 
+    const selected_country = filtered_countries.filter(c => c.name.common === key)
+    setFilteredCountries(selected_country)
+  }
 
 
   const countryText = (event) =>{
@@ -91,7 +99,7 @@ const App = () => {
   return( 
     <div>
       find countries <input value ={country} onChange={countryText}/>
-      <List_Country countries = {filtered_countries} />
+      <List_Country countries = {filtered_countries} showCountryDetails = {showCountryDetails}/>
       {results_text}
       <CountryInfo countries = {filtered_countries} />
     </div>
