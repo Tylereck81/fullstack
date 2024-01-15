@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personService from './services/persons'
+import persons from './services/persons'
 
 const Title = (props) =>{
   return(
@@ -10,16 +12,17 @@ const Title = (props) =>{
 const Display_Person = (props) =>{ 
   return(
     <div>
-      {props.name} {props.phone_number}
+      {props.name} {props.phone_number} 
+      <button onClick={props.deleteContact}>delete</button>
     </div>
   )
 }
 
-const Persons = ({persons}) =>{ 
+const Persons = ({persons, deleteContactOf}) =>{ 
   return(
     <div>
-    {persons.map(person =>
-      <Display_Person key={person.id} name= {person.name} phone_number = {person.number} />
+    {persons.map(person=>
+      <Display_Person key={person.id} name= {person.name} phone_number = {person.number} deleteContact = {() => deleteContactOf(person.id)} />
     )}
     </div>
   )
@@ -50,25 +53,39 @@ const Filter = (props) =>{
     </div>
   )
 }
+
+
+
 const App = () => {
 
   //Application States
   const [persons, setPersons] = useState([])
-
-  useEffect( () =>{
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response =>{ 
-        console.log(response) 
-        setPersons(response.data)
-      })
-  }, [])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true) 
   const [newFilter, setNewFilter] = useState('') 
 
+  //gets inital list of contacts in phonebook
+  useEffect( () =>{
+    personService 
+      .getAll() 
+      .then(initialContacts =>{ 
+        console.log(initialContacts) 
+        setPersons(initialContacts)
+      })
+  }, [])
+
+  const deleteContactOf = (key) =>{ 
+    const p = persons.find(p=> p.id === key)
+    if(window.confirm("Delete "+ p.name)){
+      personService
+        .del(key)
+        .then(response =>{ 
+          setPersons(persons.filter(p => p.id !== key) )
+        })
+    }
+  }
   
   //event handlers
   const handleNewName =(event) =>{ 
@@ -111,16 +128,14 @@ const App = () => {
         number: newNumber
       }
 
-      axios
-        .post('http://localhost:3001/persons', person_object)
-        .then(response =>{ 
-          setPersons(persons.concat(response.data))
+      personService
+        .create(person_object) 
+        .then(newPerson =>{ 
+          setPersons(persons.concat(newPerson))
           setNewName('')
           setNewNumber('')
-
         })
 
-      
     }
   }
 
@@ -136,7 +151,7 @@ const App = () => {
       handleNewNumber = {handleNewNumber}/>
       
       <Title text="Numbers" />
-      <Persons persons ={namesToShow} />
+      <Persons persons ={namesToShow} deleteContactOf = {deleteContactOf}/>
     </div>
   )
 }
