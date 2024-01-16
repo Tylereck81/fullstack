@@ -28,32 +28,30 @@ const List_Country =({countries, showCountryDetails}) =>{
 }
 
 const WeatherInfo = ({country}) =>{ 
-  let lat =country[0].capitalInfo.latlng[0]
-  let long =country[0].capitalInfo.latlng[1]
+  let capital =country[0].capital
 
   const [temp, setTemp] = useState('')
   const [icon, setIcon] = useState('')
   const [windspeed, setWind] = useState('')
-  // console.log(lat,long)
-  // console.log(api_key)
 
-  //gets the data
+  //gets the data 
   useEffect(() =>{ 
-    axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${long}&appid=${api_key}`)
-    .then(response => { 
-      setTemp(response.current.temp -273.15)
-      setIcon(`https://openweathermap.org/img/wn/ ${response.current.weather[0].icon}.png`)
-      setWind(response.current.wind_speed)
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&APPID=${api_key}`)
+    .then(response=> {
+      console.log(response)
+      setTemp(Math.round(((response.data.main.temp -273.15)*100))/100)
+      setIcon(`https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`)
+      setWind(response.data.wind.speed)
     })
   }, [])
 
   console.log(temp)
   return(
     <div>
-        <b>Weather in {country[0].capital}</b>
+        <b>Weather in {capital}</b>
         <p>temperature {temp} Celcius</p>
-        <p>wind {windspeed} m/s</p>
         <img src ={icon} />
+        <p>wind {windspeed} m/s</p>
     </div>
   )
 }
@@ -75,7 +73,7 @@ const CountryInfo =({countries}) =>{
                 <li key ={lang}>{lang}</li>
               )}
             </ul>
-            <img src ={c.flags.png} />
+            <img src ={c.flags.png}/>
             <WeatherInfo country = {countries} />
           </div>
         )}
