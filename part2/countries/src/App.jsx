@@ -3,7 +3,6 @@ import axios from 'axios'
 const api_key = import.meta.env.VITE_SOME_KEY
 
 //French Polynesia 
-//https://api.openweathermap.org/data/2.5/weather?q=Papeet%C4%93&APPID=5520e949d2a35957a0c8d89fa00fd1c9
 
 const List_Country =({countries, showCountryDetails}) =>{
   if (countries.length == 1){ 
