@@ -1,6 +1,6 @@
 # Full Stack Web Development Course
 
-2023 Full Stack Open
+2023 Full Stack Open  
 Author: Tyler Edwardo Eck  
 Course Link: https://fullstackopen.com/en/
 
