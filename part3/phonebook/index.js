@@ -61,12 +61,23 @@ app.delete('/api/persons/:id', (request, response)=>{
 
 app.post('/api/persons', (request, response)=>{
   const randInt = Math.floor(Math.random() * (10000 - 1)+ 1) 
-
   const p = request.body 
 
-  if(!p){ 
+  const isUnique = person.find(pers => pers.name === p.name)
+
+  if(!p.name){ 
     return response.status(400).json({ 
-      error: 'content missing'
+      error: 'name missing'
+    })
+  }
+  if(!p.number){ 
+    return response.status(400).json({ 
+      error: 'number missing'
+    })
+  }
+  if(isUnique){ 
+    return response.status(400).json({
+      error: 'name must be unique'
     })
   }
 
