@@ -27,13 +27,11 @@ let person = [
 ]
 
 app.get('/info', (request,response)=>{
-    const maxInt = person.length > 0
-    ? Math.max(...person.map(n =>n.id))
-    : 0  
+    const numPer = person.length
     const newdate = new Date(); 
     const newtime = newdate.toString();
     response.send(
-        'Phonebook has info for '+maxInt+' people<br><br>'+newtime
+        'Phonebook has info for '+numPer+' people<br><br>'+newtime
     )
 })
 
@@ -61,6 +59,28 @@ app.delete('/api/persons/:id', (request, response)=>{
   response.status(204).end()
 })
 
+app.post('/api/persons', (request, response)=>{
+  const randInt = Math.floor(Math.random() * (10000 - 1)+ 1) 
+
+  const p = request.body 
+
+  if(!p){ 
+    return response.status(400).json({ 
+      error: 'content missing'
+    })
+  }
+
+  const per = { 
+    id : randInt, 
+    name: p.name, 
+    number: p.number 
+  }
+
+  person = person.concat(per)
+  console.log(per)
+  response.json(per)
+
+})
 
 const PORT = 3001 
 app.listen(PORT, () =>{ 
