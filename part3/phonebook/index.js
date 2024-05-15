@@ -1,7 +1,11 @@
 const express = require('express') 
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+
+morgan.token('req-body', (req) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
 let person = [
     { 
@@ -25,6 +29,24 @@ let person = [
       "number": "39-23-6423122"
     }
 ]
+
+// const requestLogger = (request, response, next) =>{ 
+//   console.log('Method:', request.method)
+//   console.log('Path:  ', request.path)
+//   console.log('Body:  ', request.body)
+//   console.log('---')
+//   next()
+// }
+
+// app.use(requestLogger)
+
+// const unknownEndpoint = (request, response) => {
+//   response.status(404).send({ error: 'unknown endpoint' })
+// }
+
+// app.use(unknownEndpoint)
+
+
 
 app.get('/info', (request,response)=>{
     const numPer = person.length
