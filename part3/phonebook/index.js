@@ -1,13 +1,13 @@
 const express = require('express') 
-const morgan = require('morgan')
+// const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
 
 app.use(express.json())
 app.use(cors())
 
-morgan.token('req-body', (req) => JSON.stringify(req.body))
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
+// morgan.token('req-body', (req) => JSON.stringify(req.body))
+// app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
 let person = [
     { 
@@ -48,7 +48,9 @@ let person = [
 
 // app.use(unknownEndpoint)
 
-
+app.get('/', (request,response)=>{ 
+  response.send('<h1>HELLO WORLD</h1>')
+})
 
 app.get('/info', (request,response)=>{
     const numPer = person.length
