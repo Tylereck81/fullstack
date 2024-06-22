@@ -71,7 +71,7 @@ app.get('/api/persons', (request, response) =>{
 })
 
 app.get('/api/persons/:id', (request, response) =>{ 
-    Contact.findbyId(request.params.id).then(contact =>{ 
+    Contact.findById(request.params.id).then(contact =>{ 
       response.json(contact)
   })
 })
