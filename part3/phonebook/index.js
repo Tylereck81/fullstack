@@ -1,13 +1,14 @@
 require('dotenv').config()
 const express = require('express') 
 // const morgan = require('morgan')
-const app = express()
 const cors = require('cors')
+const app = express()
 app.use(express.static('dist'))
-const Contact = require('./models/contact')
-
 app.use(express.json())
 app.use(cors())
+
+
+const Contact = require('./models/contact')
 
 // morgan.token('req-body', (req) => JSON.stringify(req.body))
 // app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
@@ -64,24 +65,28 @@ let person = [
 //     )
 // })
 
-app.get('/api/persons', (request, response) =>{ 
-    Contact.find({}).then(contacts =>{ 
-      response.json(contacts)
+
+app.get('/api/persons/:id', (request, response, next) =>{ 
+    Contact.findById(request.params.id)
+    .then(contact =>{ 
+      if(contact){ 
+        response.json(contact)
+      }
+      else{ 
+        response.status(404).end() 
+      }
   })
+  .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) =>{ 
-    Contact.findById(request.params.id).then(contact =>{ 
-      response.json(contact)
+
+app.delete('/api/persons/:id', (request, response, next)=>{ 
+  Contact.findByIdAndDelete(request.params.id)
+  .then(result =>{ 
+    response.status(204).end()
   })
+  .catch(error => next(error))
 })
-
-// app.delete('/api/persons/:id', (request, response)=>{ 
-//   const id = Number(request.params.id)
-//   person = person.filter(p => p.id !== id)
-
-//   response.status(204).end()
-// })
 
 app.post('/api/persons', (request, response)=>{
   const body = request.body 
@@ -102,6 +107,39 @@ app.post('/api/persons', (request, response)=>{
   })
 
 })
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+
+  Contact.findByIdAndUpdate(request.params.id, { name, number }, { new: true, runValidators: true, context: 'query' })
+    .then(updatePerson => {
+      response.json(updatePerson)
+    })
+    .catch(error => next(error))
+})
+
+
+
+app.get('/api/persons', (request, response) =>{ 
+  Contact.find({}).then(contacts =>{ 
+    response.json(contacts)
+  })
+})
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  else if (error.name === 'ValidationError'){ 
+    return response.status(400).send({error: 'validation error'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () =>{ 
