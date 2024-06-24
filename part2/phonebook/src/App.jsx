@@ -170,7 +170,6 @@ const App = () => {
           setPersons(persons.concat(newPerson))
           setNewName('')
           setNewNumber('')
-
           setType('notif')
           setMessage(`Added ${person_object.name}`)
 
@@ -179,8 +178,15 @@ const App = () => {
             setType(null)
           },5000)
         })
-      
+        .catch(error =>{ 
+          setType('error')
+          setMessage(error.response.data.error)
 
+          setTimeout(()=>{
+            setMessage(null)
+            setType(null)
+          },5000)
+        })
     }
   }
 
