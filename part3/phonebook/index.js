@@ -56,14 +56,16 @@ let person = [
 //   response.send('<h1>HELLO WORLD</h1>')
 // })
 
-// app.get('/info', (request,response)=>{
-//     const numPer = person.length
-//     const newdate = new Date(); 
-//     const newtime = newdate.toString();
-//     response.send(
-//         'Phonebook has info for '+numPer+' people<br><br>'+newtime
-//     )
-// })
+app.get('/info', (request,response)=>{
+  Contact.find({}).then(contacts =>{ 
+    const numPer = contacts.length
+    const newdate = new Date(); 
+    const newtime = newdate.toString();
+    response.send(
+        'Phonebook has info for '+numPer+' people<br><br>'+newtime
+    )
+  })
+})
 
 
 app.get('/api/persons/:id', (request, response, next) =>{ 
