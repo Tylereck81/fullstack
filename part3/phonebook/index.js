@@ -90,23 +90,20 @@ app.delete('/api/persons/:id', (request, response, next)=>{
   .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response)=>{
+app.post('/api/persons', (request, response, next)=>{
   const body = request.body 
 
-  if (body.name === undefined || body.number === undefined){ 
-      return response.status(400).json({ 
-          error: 'content missing'
-      })
-  }
 
   const person = new Contact({ 
       name: body.name, 
       number: body.number, 
   })
 
-  person.save().then(savedPerson =>{ 
+  person.save()
+  .then(savedPerson =>{ 
       response.json(savedPerson)
   })
+  .catch(error=> next(error))
 
 })
 
@@ -135,7 +132,7 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   }
   else if (error.name === 'ValidationError'){ 
-    return response.status(400).send({error: 'validation error'})
+    return response.status(400).json({error: error.message})
   }
 
   next(error)
