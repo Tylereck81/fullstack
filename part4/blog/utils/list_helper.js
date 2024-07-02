@@ -9,34 +9,46 @@ const totalLikes = (blogs) => {
 } 
 
 const favoriteBlog = (blogs) => {
-  let max = -1000;
-  let maxLikedBlog = {};
+  let max = -1000
+  let maxLikedBlog = {}
 
   for (const b of blogs) {
 
     if (b.likes > max) {
-      max = b.likes;
-      maxLikedBlog = b;
+      max = b.likes
+      maxLikedBlog = b
 
     }
   }
-  return maxLikedBlog;
+  return maxLikedBlog
 }
 
 const mostBlogs = (blogs) =>{ 
-  const groupByAuthor = lodash.groupBy(blogs, 'author');
+  const groupByAuthor = lodash.groupBy(blogs, 'author')
 
   const topAuthor = lodash.maxBy(Object.keys(groupByAuthor), author => lodash.get(groupByAuthor[author],'length',0))
 
   return {
       author: topAuthor,
       blogs: lodash.get(groupByAuthor[topAuthor],'length',0)
-  };
+  }
+}
+
+const mostLikes = (blogs) =>{ 
+  const groupByAuthor = lodash.groupBy(blogs, 'author')
+
+  const topAuthor = lodash.maxBy(Object.keys(groupByAuthor), author => lodash.sumBy(groupByAuthor[author], 'likes'))
+
+  return { 
+    author: topAuthor, 
+    likes: lodash.sumBy(groupByAuthor[topAuthor], 'likes')
+  }
 }
 
 module.exports = {
   dummy, 
   totalLikes, 
   favoriteBlog, 
-  mostBlogs
+  mostBlogs, 
+  mostLikes
 }

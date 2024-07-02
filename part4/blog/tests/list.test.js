@@ -128,7 +128,7 @@ describe('most liked blog', () => {
     })
 })
 
-describe('aithor with most blogs', () => {
+describe('author with most blogs', () => {
 
     test('empty blogs', () => {
         const result = listHelper.mostBlogs(emptyBlog)
@@ -146,7 +146,7 @@ describe('aithor with most blogs', () => {
         })
     })
 
-    test('when list is bigger', () => {
+    test('when list has multiple blogs', () => {
         const result = listHelper.mostBlogs(listWithMultipleBlogs)
         assert.deepStrictEqual(result,{
                 author: 'Robert C. Martin', 
@@ -154,4 +154,30 @@ describe('aithor with most blogs', () => {
         })
     })
 })
-    
+
+describe('author with most likes', () => {
+
+    test('empty blogs', () => {
+        const result = listHelper.mostLikes(emptyBlog)
+        assert.deepStrictEqual(result,{
+            author: undefined,
+            likes: 0
+        })
+    })
+
+    test('when list has only one item', () => {
+        const result = listHelper.mostLikes(listWithOneBlog)
+        assert.deepStrictEqual(result,{ 
+                author: 'Edsger W. Dijkstra', 
+                likes: 5
+        })
+    })
+
+    test('when list has multiple blogs', () => {
+        const result = listHelper.mostLikes(listWithMultipleBlogs)
+        assert.deepStrictEqual(result,{
+                author: 'Robert C. Martin', 
+                likes: 24
+        })
+    })
+})
