@@ -43,7 +43,7 @@ describe('when there is initially some blogs saved', () =>{
 
 describe('when a new blog is added', () =>{ 
 
-    test('suceeds with valid blog', async() =>{ 
+    test('suceeds with adding a valid blog', async() =>{ 
         const newBlog = {
             title: "Valid Blog",
             author: "Tyler Eck",
@@ -64,23 +64,40 @@ describe('when a new blog is added', () =>{
         assert(titles.includes('Valid Blog'))
     })
 
-    test('fails with status code 400 for missing  blog', async() =>{ 
-        const missingAuthor = {
-            title: "Invalid Blog",
+    test('fails with status code 400 for missing blog title', async() =>{ 
+        const missingTitle = {
+            author: "Tyler",
             url: "ahajdshkf",
             likes: 50
         }
 
         await api
             .post('/api/blogs')
-            .send(missingAuthor)
+            .send(missingTitle)
             .expect(400)
     
         const blogsAtEnd = await helper.blogInDb()
         assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
     })
 
-    test('Likes property is missing, defaults to 0', async () => {
+    test('fails with status code 400 for missing blog url', async() =>{ 
+        const missingUrl = {
+            author: "Tyler",
+            title: "Tyler without URL",
+            likes: 50
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(missingUrl)
+            .expect(400)
+    
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+
+    test('succeeds even when likes property is missing, defaults to 0', async () => {
         const missingLikes = {
             title: 'Blog missing likes',
             author: 'Tyler',
@@ -98,6 +115,35 @@ describe('when a new blog is added', () =>{
     })
 
 })
+
+describe('when a blog is deleted', () =>{ 
+    test('suceeds with deleting a valid blog', async() =>{ 
+
+        const blogStart = await helper.blogInDb()
+        const blogtoDelete = blogStart[0]
+
+        await api
+            .delete(`/api/blogs/${blogtoDelete.id}`)
+            .expect(204)
+    
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    })
+
+    test('fails when deleting a blog not found', async() =>{ 
+
+        const blogtoDeleteID = 1
+
+        await api
+            .delete(`/api/blogs/${blogtoDeleteID}`)
+            .expect(400)
+    
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+})
+
 
 after(async () => {
   await mongoose.connection.close()
