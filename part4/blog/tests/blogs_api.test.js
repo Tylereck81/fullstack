@@ -64,7 +64,7 @@ describe('when a new blog is added', () =>{
         assert(titles.includes('Valid Blog'))
     })
 
-    test('fails with status code 400 for invalid blog', async() =>{ 
+    test('fails with status code 400 for missing  blog', async() =>{ 
         const missingAuthor = {
             title: "Invalid Blog",
             url: "ahajdshkf",
@@ -78,6 +78,23 @@ describe('when a new blog is added', () =>{
     
         const blogsAtEnd = await helper.blogInDb()
         assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('Likes property is missing, defaults to 0', async () => {
+        const missingLikes = {
+            title: 'Blog missing likes',
+            author: 'Tyler',
+            url: 'https://tyler.com'
+        }
+    
+        await api
+            .post('/api/blogs')
+            .send(missingLikes)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+    
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
     })
 
 })
