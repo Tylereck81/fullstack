@@ -221,7 +221,7 @@ describe('when there is initially one user in db', () => {
 
 
 describe('when updating a blog', () => {
-    test('Creation of a user without a username should fail with a 400 Bad Request', async () => {
+    test('creation fails with missing username', async () => {
         const newUser = {
             name: 'John Doe',
             password: 'password123',
@@ -235,7 +235,7 @@ describe('when updating a blog', () => {
         assert(response.body.error.includes('username` is required'))
     })
 
-    test('Creation of a user with a short username should fail with a 400 Bad Request', async () => {
+    test('creation fails with short username', async () => {
         const newUser = {
             username: 'us',
             name: 'John Doe',
@@ -250,7 +250,7 @@ describe('when updating a blog', () => {
         assert(response.body.error.includes('is shorter than the minimum allowed length'))
     })
 
-    test('Creation of a user without a password should fail with a 400 Bad Request', async () => {
+    test('creation fails with no password', async () => {
         const newUser = {
             username: 'johndoe',
             name: 'John Doe',
@@ -264,7 +264,7 @@ describe('when updating a blog', () => {
         assert(response.body.error.includes('Password is required'))
     })
 
-    test('Creation of a user with a short password should fail with a 400 Bad Request', async () => {
+    test('creation fails with short password', async () => {
         const newUser = {
             username: 'johndoe',
             name: 'John Doe',
@@ -279,17 +279,18 @@ describe('when updating a blog', () => {
         assert(response.body.error.includes('Password is too short'))
     })
 
-    test('Creation of a user with a non-unique username should fail with a 400 Bad Request', async () => {
+    test('creation fails when username has already been taken', async () => {
         const newUser = {
-            username: 'testuser', // An existing username
-            name: 'John Doe',
-            password: 'password123',
+            username: 'tyler', // An existing username
+            name: 'tyler',
+            password: 'password',
         }
 
         const response = await api
             .post('/api/users')
             .send(newUser)
             .expect(400)
+        
 
         assert(response.body.error.includes('expected `username` to be unique'))
     })

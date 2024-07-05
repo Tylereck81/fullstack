@@ -6,7 +6,7 @@ const initialBlogs = [
     title: 'Tyler Test Blog 1',
     author: 'Tyler Eck',
     url: 'https://tylertestblog.com',
-    likes: 5
+    likes: 5, 
   },
   {
     title: 'Tyler Test Blog 2',
