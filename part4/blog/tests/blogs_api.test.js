@@ -11,11 +11,43 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-beforeEach(async () => {
-  await Blog.deleteMany({})
+const newUser = {
+    username: 'user1',
+    name: 'user1',
+    password: 'password'
+}
 
-  await Blog.insertMany(helper.initialBlogs)
-})
+const registernewUser = async() => {
+    await api
+    .post('/api/users')
+    .send(newUser)
+}
+
+const getToken =  async () => {
+    const response = await api
+        .post('/api/login')
+        .send(newUser)
+
+    return response.body.token
+}
+
+beforeEach(async () => {
+    await User.deleteMany({})
+    await registernewUser()
+
+    await Blog.deleteMany({})
+
+    const token = await getToken()
+
+    await Promise.all(helper.initialBlogs.map(async (blog) => {
+        const response = await api
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
+            .send(blog)
+    }))
+
+  })
+
 
 describe('when there is initially some blogs saved', () =>{ 
     
@@ -46,6 +78,7 @@ describe('when there is initially some blogs saved', () =>{
 describe('when a new blog is added', () =>{ 
 
     test('suceeds with adding a valid blog', async() =>{ 
+        const token = await getToken()
         const newBlog = {
             title: "Valid Blog",
             author: "Tyler Eck",
@@ -55,6 +88,7 @@ describe('when a new blog is added', () =>{
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -67,6 +101,7 @@ describe('when a new blog is added', () =>{
     })
 
     test('fails with status code 400 for missing blog title', async() =>{ 
+        const token = await getToken()
         const missingTitle = {
             author: "Tyler",
             url: "ahajdshkf",
@@ -75,6 +110,7 @@ describe('when a new blog is added', () =>{
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(missingTitle)
             .expect(400)
     
@@ -83,6 +119,7 @@ describe('when a new blog is added', () =>{
     })
 
     test('fails with status code 400 for missing blog url', async() =>{ 
+        const token = await getToken()
         const missingUrl = {
             author: "Tyler",
             title: "Tyler without URL",
@@ -91,6 +128,7 @@ describe('when a new blog is added', () =>{
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(missingUrl)
             .expect(400)
     
@@ -100,6 +138,7 @@ describe('when a new blog is added', () =>{
 
 
     test('succeeds even when likes property is missing, defaults to 0', async () => {
+        const token = await getToken()
         const missingLikes = {
             title: 'Blog missing likes',
             author: 'Tyler',
@@ -108,6 +147,7 @@ describe('when a new blog is added', () =>{
     
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(missingLikes)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -116,16 +156,34 @@ describe('when a new blog is added', () =>{
         assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
     })
 
+    test('fails with status code 401 Unauthorized if token is not given', async() =>{ 
+        const validBlog = {
+            title: "Valid Blog",
+            author: "Tyler Eck",
+            url: "http://tylervalidblog.com",
+            likes: 33
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(validBlog)
+            .expect(401)
+        
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length )
+    })
+
 })
 
 describe('when a blog is deleted', () =>{ 
     test('suceeds with deleting a valid blog', async() =>{ 
-
+        const token = await getToken()
         const blogStart = await helper.blogInDb()
         const blogtoDelete = blogStart[0]
 
         await api
             .delete(`/api/blogs/${blogtoDelete.id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(204)
     
         const blogsAtEnd = await helper.blogInDb()
@@ -133,15 +191,28 @@ describe('when a blog is deleted', () =>{
     })
 
     test('fails when deleting a blog not found', async() =>{ 
-
+        const token = await getToken()
         const blogtoDeleteID = 1
 
         await api
             .delete(`/api/blogs/${blogtoDeleteID}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(400)
     
         const blogsAtEnd = await helper.blogInDb()
         assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('fails with deleting a blog if token not given', async() =>{ 
+        const blogStart = await helper.blogInDb()
+        const blogtoDelete = blogStart[0]
+
+        await api
+            .delete(`/api/blogs/${blogtoDelete.id}`)
+            .expect(401)
+    
+        const blogsAtEnd = await helper.blogInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length )
     })
 
 })
@@ -281,8 +352,8 @@ describe('when updating a blog', () => {
 
     test('creation fails when username has already been taken', async () => {
         const newUser = {
-            username: 'tyler', // An existing username
-            name: 'tyler',
+            username: 'user1',
+            name: 'user1',
             password: 'password',
         }
 
