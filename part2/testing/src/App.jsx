@@ -23,7 +23,7 @@ const Footer = () => {
   return (
     <div style={footerStyle}>
       <br />
-      <em>Note app, Department of Computer Science, University of Helsinki 2023</em>
+      <em>Note app, Department of Computer Sciennce, University of Helsinki 2023</em>
     </div>
   )
 }
@@ -61,7 +61,6 @@ const App =() =>{
       .then(initialNotes =>{ 
         setNotes(initialNotes)
       })
-
   } ,[])
 
   //adding a note
@@ -88,7 +87,7 @@ const App =() =>{
 
   const notestoShow = showAll
   ? notes
-  : notes.filter(note => note.important === true)
+  : notes.filter(note => note.important)
 
   return(
     <div>
