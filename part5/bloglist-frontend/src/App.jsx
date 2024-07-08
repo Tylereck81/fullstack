@@ -16,6 +16,7 @@ const Notification = ({message}) =>{
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newBlog, setNewBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
@@ -25,6 +26,15 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
   }, [])
 
   //adding a blog
@@ -56,6 +66,11 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
+
+      window.localStorage.setItem(
+        'loggedBlogappUser', JSON.stringify(user)
+      ) 
+
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -102,6 +117,12 @@ const App = () => {
     </form>  
   )
 
+  const logOut = () =>{ 
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+    console.log('logout')
+  }
+
   if(user === null){ 
     return (
       <div>
@@ -122,6 +143,10 @@ const App = () => {
           <p>{user.name} logged in</p>
         </div>
       }
+
+      <button onClick={() => logOut()}>
+          logout
+      </button>
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
