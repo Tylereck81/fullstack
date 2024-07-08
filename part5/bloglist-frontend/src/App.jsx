@@ -3,12 +3,12 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const Notification = ({message}) =>{ 
+const Notification = ({type, message}) =>{ 
   if(message === null){ 
     return null
   }
   return (
-    <div className='error'>
+    <div className={type}>
       {message} 
     </div>
   )
@@ -22,7 +22,8 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [type, setType] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -51,16 +52,26 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog =>{ 
+        setBlogs(blogs.concat(returnedBlog))
         console.log(returnedBlog)
         setTitle('')
         setAuthor('')
         setUrl('')
+        setType('notif')
+        setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       })
+      .catch(error =>{ 
+        setType('error')
+        setErrorMessage(error.response.data.error)
 
-    blogService
-      .getAll().then(blogs =>
-        setBlogs( blogs )
-    )
+        setTimeout(()=>{
+          setErrorMessage(null)
+          setType(null)
+        },5000)
+      })
   }
 
 
@@ -77,11 +88,16 @@ const App = () => {
       ) 
 
       blogService.setToken(user.token)
+      console.log("LOL")
       setUser(user)
       setUsername('')
       setPassword('')
+
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setType('error')
+      setUsername('')
+      setPassword('')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -155,6 +171,7 @@ const App = () => {
   if(user === null){ 
     return (
       <div>
+        <Notification type ={type} message={errorMessage}/>
         <h2>log in to application </h2>
         {loginForm()}
       </div>
@@ -164,7 +181,7 @@ const App = () => {
   return (
     <div>
       <h1>blogs</h1>
-      <Notification message={errorMessage}/>
+      <Notification type ={type} message={errorMessage}/>
 
       {user === null ?
         loginForm() :
