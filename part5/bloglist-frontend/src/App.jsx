@@ -65,6 +65,30 @@ const App = () => {
       })
   }
 
+  //updating likes for blog
+  const updateLikes = (blogObject) =>{ 
+    const newBlog = { ... blogObject}
+    const newLikes = newBlog.likes + 1
+    console.log({...newBlog, likes: newLikes})
+    blogService
+      .update(blogObject.id, {...newBlog, likes: newLikes})
+      .then(returnedBlog =>{ 
+        console.log(returnedBlog)
+        setBlogs((oldBlogs) =>
+          oldBlogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
+        )
+      })
+      .catch(error =>{ 
+        setType('error')
+        setErrorMessage(error.response.data.error)
+
+        setTimeout(()=>{
+          setErrorMessage(null)
+          setType(null)
+        },5000)
+      })
+  }
+
   const blogForm = () => (
     <Togglable buttonLabel="create new blog" ref = {blogFormRef}>
       <BlogForm addBlog={addBlog} />
@@ -164,7 +188,7 @@ const App = () => {
       </div>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLikes= {updateLikes}/>
       )}
     </div>
   )

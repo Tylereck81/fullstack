@@ -59,10 +59,13 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const {newTitle, newAuthor, newURL, newLikes } = request.body
-
-  const updatedPerson = await Blog.findByIdAndUpdate( request.params.id, { newTitle, newAuthor, newURL, newLikes }, { new: true, runValidators: true, context: 'query' })
-  response.status(201).json(updatedPerson)
+  const newTitle = request.body.title
+  const newAuthor = request.body.author
+  const newURL = request.body.url
+  const newLikes = request.body.likes
+  
+  const updatedBlog = await Blog.findByIdAndUpdate( request.params.id, { title: newTitle, author: newAuthor, url: newURL, likes: newLikes }, { new: true, runValidators: true, context: 'query' }).populate('user',{username: 1, name: 1, id: 1})
+  response.status(201).json(updatedBlog)
 })
 
 
