@@ -23,6 +23,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [type, setType] = useState('')
+  const [sortedBlogs, setSortedBlogs] = useState([])
 
   const blogFormRef = useRef()
 
@@ -41,6 +42,12 @@ const App = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const sorted_Blogs = [...blogs].sort((a, b) => b.likes - a.likes)
+    setSortedBlogs(sorted_Blogs)
+  }, [blogs])
+
+
   //adding a blog
   const addBlog = (blogObject) =>{ 
     blogFormRef.current.toggleVisibility()
@@ -48,6 +55,7 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog =>{ 
         setBlogs(blogs.concat(returnedBlog))
+        setSortedBlogs([...sortedBlogs, returnedBlog])
         setType('notif')
         setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
         setTimeout(() => {
@@ -187,7 +195,7 @@ const App = () => {
       { blogForm() }
       </div>
 
-      {blogs.map(blog =>
+      {sortedBlogs.map(blog =>
         <Blog key={blog.id} blog={blog} updateLikes= {updateLikes}/>
       )}
     </div>
