@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -24,6 +25,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [type, setType] = useState('')
+  const [blogFormVisible,  setblogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -57,6 +59,7 @@ const App = () => {
         setTitle('')
         setAuthor('')
         setUrl('')
+        setblogFormVisible(false)
         setType('notif')
         setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
         setTimeout(() => {
@@ -128,39 +131,6 @@ const App = () => {
     </form>      
   )
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        title:
-          <input
-          type="text"
-          value={newTitle}
-          name="Title"
-          onChange={({ target }) => setTitle(target.value)}
-        />
-      </div>
-      <div>
-        author:
-          <input
-          type="text"
-          value={newAuthor}
-          name="Author"
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-      </div>
-      <div>
-        url:
-          <input
-          type="text"
-          value={newUrl}
-          name="url"
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>  
-  )
-
 
   const logOut = () =>{ 
     window.localStorage.removeItem('loggedBlogappUser')
@@ -177,6 +147,10 @@ const App = () => {
       </div>
     )
   }
+
+  const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
+  const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
+
 
   return (
     <div>
@@ -195,7 +169,23 @@ const App = () => {
       </button>
 
       <h2>create new</h2>
-      { blogForm() }
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setblogFormVisible(true)}>create new blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            newTitle={newTitle}
+            newAuthor={newAuthor}
+            newUrl = {newUrl}
+            handlesetTitle={({ target }) => setTitle(target.value)}
+            handlesetAuthor={({ target }) => setAuthor(target.value)}
+            handlesetUrl={({ target }) => setUrl(target.value)}
+            addBlog={addBlog}
+          />
+          <button onClick={() => setblogFormVisible(false)}>cancel</button>
+        </div>
+      </div>
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
