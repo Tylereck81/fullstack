@@ -1,13 +1,11 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, updateLikes, deleteBlog, user}) => {
-  
+const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
   const [blogDetailsVisible, setBlogDetailsVisible] = useState(false)
 
   const toggleDetails = () => {
     setBlogDetailsVisible(!blogDetailsVisible)
   }
-
 
   const blogStyle = {
     paddingTop: 10,
@@ -17,7 +15,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user}) => {
     marginBottom: 5
   }
 
-  return(
+  return (
     <div className='blog' style={blogStyle}>
       <p>
         {blog.title} {blog.author}
@@ -25,7 +23,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user}) => {
       </p>
       {blogDetailsVisible && (
         <div>
-          <div> 
+          <div>
             {blog.url}
           </div>
           <div>
@@ -35,12 +33,11 @@ const Blog = ({ blog, updateLikes, deleteBlog, user}) => {
           <div>
             {blog.user.name}
           </div>
-          <div> 
-            {blog.user && blog.user.username === user.username
-            ? <button onClick={() => deleteBlog(blog)}>remove</button>
-            : null
-            }
-          </div> 
+          <div>
+            {blog.user && blog.user.username === user.username ? (
+              <button onClick={() => deleteBlog(blog)}>remove</button>
+            ) : null}
+          </div>
         </div>
       )}
     </div>
