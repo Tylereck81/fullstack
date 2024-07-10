@@ -23,5 +23,30 @@ describe('Blog render', function() {
     expect(urlElement).not.toBeInTheDocument()
     expect(likesElement).not.toBeInTheDocument()
   })
+
+  test('renders URL and likes when details button is clicked', async () => {
+    const test_blog = {
+      title: 'Test Blog',
+      author: 'Tyler Test',
+      url: 'https://tylertest.com',
+      likes: 4,
+      user: {
+        name: 'User Test',
+        username: 'tyler'
+      }
+    }
+
+    render(<Blog blog={test_blog} />)
+
+    const user = userEvent.setup()
+    const showDetailsButton = screen.getByText('view')
+    await user.click(showDetailsButton)
+
+    const urlElement = screen.getByText('https://tylertest.com')
+    const likesElement = screen.getByText('4', { exact: false })
+
+    expect(urlElement).toBeInTheDocument()
+    expect(likesElement).toBeInTheDocument()
+  })
 })
 
