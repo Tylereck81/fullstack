@@ -73,7 +73,6 @@ describe('Blog app', function() {
       })
 
       it('blog can be liked ', function () {
-
         cy.contains('view').click()
         cy.get('#likes').click()
         cy.contains('likes: 1')
