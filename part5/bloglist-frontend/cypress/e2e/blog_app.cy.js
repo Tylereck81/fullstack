@@ -67,6 +67,22 @@ describe('Blog app', function() {
       cy.contains('http://tylertest.com')
     })
 
+    describe('After logged in user adds a blog', () => {
+      beforeEach( function() {
+        cy.addBlog({ title: 'New Test Blog', author: 'New Author', url: 'http://tylertest.com' })
+      })
+
+      it('blog can be liked ', function () {
+
+        cy.contains('view').click()
+        cy.get('#likes').click()
+        cy.contains('likes: 1')
+        cy.get('#likes').click()
+        cy.contains('likes: 2')
+      })
+
+    })
+
   })
 
 

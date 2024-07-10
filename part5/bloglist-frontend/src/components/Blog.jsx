@@ -28,7 +28,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
           </div>
           <div>
             likes: {blog.likes}
-            <button onClick={() => updateLikes(blog)}>like</button>
+            <button id= "likes" onClick={() => updateLikes(blog)}>like</button>
           </div>
           <div>
             <div>{blog.user ? blog.user.name : null}</div>
