@@ -1,5 +1,4 @@
 import React from 'react'
-import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/react'
 import Blog from './Blog'
@@ -47,6 +46,33 @@ describe('Blog render', function() {
 
     expect(urlElement).toBeInTheDocument()
     expect(likesElement).toBeInTheDocument()
+  })
+
+  test('like button handler is called twice when button is clicked twice ', async () => {
+    const test_blog = {
+      title: 'Test Blog',
+      author: 'Tyler Test',
+      url: 'https://tylertest.com',
+      likes: 4,
+      user: {
+        name: 'User Test',
+        username: 'tyler'
+      }
+    }
+
+    const mockHandler = vi.fn()
+
+    render(<Blog blog={test_blog} updateLikes={mockHandler} />)
+
+    const user = userEvent.setup()
+    const showDetailsButton = screen.getByText('view')
+    await user.click(showDetailsButton)
+
+    const likesButton = screen.getByText('like')
+    await user.click(likesButton)
+    await user.click(likesButton)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
 
