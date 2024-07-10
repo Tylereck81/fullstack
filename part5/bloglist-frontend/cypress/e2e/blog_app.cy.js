@@ -80,6 +80,13 @@ describe('Blog app', function() {
         cy.contains('likes: 2')
       })
 
+      it ('A blog can be removed', () => {
+        cy.contains('view').click()
+        cy.get('#remove').click()
+
+        cy.contains('New Test Blog New Author').should('not.exist')
+      })
+
     })
 
   })
