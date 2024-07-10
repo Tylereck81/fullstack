@@ -1,7 +1,8 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor  } from '@testing-library/react'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 describe('Blog render', function() {
   test('renders title and author, but does not render URL or likes by default', () => {
@@ -76,3 +77,34 @@ describe('Blog render', function() {
   })
 })
 
+describe('Blog form submit', function() {
+
+  test('calls the event handler with the right props when a new blog is created', async () => {
+    const addBlog = vi.fn()
+    const user = userEvent.setup()
+
+    render( <BlogForm addBlog={addBlog} />)
+
+    const titleInput = screen.getByLabelText('title:')
+    const authorInput = screen.getByLabelText('author:')
+    const urlInput = screen.getByLabelText('url:')
+
+    const createButton = screen.getByText('create')
+
+    await user.type(titleInput, 'Test Blog')
+    await user.type(authorInput, 'Test Tyler')
+    await user.type(urlInput, 'https://tylertest.com')
+
+    user.click(createButton)
+
+    await waitFor(() => {
+      expect(addBlog).toHaveBeenCalledTimes(1)
+      expect(addBlog).toHaveBeenCalledWith({
+        title: 'Test Blog',
+        author: 'Test Tyler',
+        url: 'https://tylertest.com',
+      })
+    })
+
+  })
+})
