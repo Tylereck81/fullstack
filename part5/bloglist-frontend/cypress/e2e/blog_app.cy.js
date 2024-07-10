@@ -87,6 +87,23 @@ describe('Blog app', function() {
         cy.contains('New Test Blog New Author').should('not.exist')
       })
 
+      it ('Another user cannot see delete button for blog that is not theirs ', () => {
+        cy.contains('logout').click()
+        cy.request('POST', `${Cypress.env('BACKEND')}/users`, {
+          username: 'user2',
+          password: 'user2password',
+          name: 'user2'
+        })
+
+        cy.login({
+          username: 'user2',
+          password: 'user2password'
+        })
+        
+        cy.contains('view').click()
+        cy.get('#remove').should('not.exist')
+      })
+
     })
 
   })
