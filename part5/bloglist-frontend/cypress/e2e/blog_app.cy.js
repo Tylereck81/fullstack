@@ -99,10 +99,32 @@ describe('Blog app', function() {
           username: 'user2',
           password: 'user2password'
         })
-        
+
         cy.contains('view').click()
         cy.get('#remove').should('not.exist')
       })
+
+      it ('Blogs are in order based on likes', function () {
+        cy.get('.blog').eq(0).get('#view').click()
+        cy.get('.blog').eq(0).get('#likes').click()
+        cy.get('.blog').eq(0).get('#likes').click()
+
+        cy.addBlog({ title: 'Second Test Blog', author: 'Second Test Author', url: 'http://tylertest.com' })
+
+        cy.get('.blog').eq(0).should('contain', 'New Test Blog')
+        cy.get('.blog').eq(1).should('contain', 'Second Test Blog')
+
+        cy.contains('Second Test Blog').parent().contains('view').click()
+
+        cy.get('#likes').click()
+        cy.get('#likes').click()
+        cy.get('#likes').click()
+
+        cy.get('.blog').eq(0).should('contain', 'Second Test Blog')
+        cy.get('.blog').eq(1).should('contain', 'New Test Blog')
+
+      })
+
 
     })
 
