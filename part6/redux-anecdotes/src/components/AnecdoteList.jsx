@@ -1,32 +1,36 @@
-/* eslint-disable react/prop-types */
 import { useSelector, useDispatch } from 'react-redux'
-import { addVotes } from '../reducers/anecdoteReducer'
+import { voteAnecdote } from '../reducers/anecdoteReducer'
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(state => state)
+  
   const dispatch = useDispatch()
+  
+  const anecdotes = useSelector(state => [...state.anecdotes].sort((a, b) => b.votes - a.votes))
+  const filter = useSelector(state => state.filter)
+
+  const filteredAnecdotes = anecdotes
+  .filter(anecdote =>anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+  .sort((a, b) => b.votes - a.votes)
 
   const vote = (id) => {
-    dispatch(addVotes(id))
+    dispatch(voteAnecdote(id))
   }
-    
+
   return (
     <div>
-        <h2>Anecdotes</h2>
-        {anecdotes.map(anecdote =>
+      {filteredAnecdotes.map(anecdote =>
         <div key={anecdote.id}>
-            <div>
+          <div>
             {anecdote.content}
-            </div>
-            <div>
+          </div>
+          <div>
             has {anecdote.votes}
             <button onClick={() => vote(anecdote.id)}>vote</button>
-            </div>
+          </div>
         </div>
-        )}
+      )}
     </div>
   )
-
 }
-  
+
 export default AnecdoteList
