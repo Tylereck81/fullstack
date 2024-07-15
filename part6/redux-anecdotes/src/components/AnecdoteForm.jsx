@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 import { addAnecdote } from '../reducers/anecdoteReducer'
 import { useDispatch } from 'react-redux'
-import { setNotification } from '../reducers/notificationReducer'
-
+import { showNotification } from '../reducers/notificationReducer'
 
 const AnecdoteForm = () => {
     const dispatch = useDispatch()
@@ -12,11 +11,7 @@ const AnecdoteForm = () => {
       const content = event.target.newAnecdote.value
       event.target.newAnecdote.value = ''
       dispatch(addAnecdote(content))
-
-      dispatch(setNotification(`Added "${content}"!`))
-        setTimeout(()=> {
-            dispatch(setNotification(''))
-      }, 5000) 
+      dispatch(showNotification(`You added "${content}"!`,5)) 
     }
 
     return (
