@@ -11,7 +11,6 @@ export const useField = (type) => {
     setValue('')
   }
 
-
   return {
     type,
     value,
